@@ -31,11 +31,7 @@ for i = 1:length(saccades.Y.onsets)
 end
 
 % get onsets and offsets
-trial.microSaccades.X.onsets = sort([trial.saccades.X.fixOnsets; trial.microSaccades.X.onsets]);
-trial.microSaccades.Y.onsets = sort([trial.saccades.Y.fixOnsets; trial.microSaccades.Y.onsets]);
 trial.microSaccades.onsets = [trial.microSaccades.X.onsets; trial.microSaccades.Y.onsets];
-trial.microSaccades.X.offsets = sort([trial.saccades.X.fixOffsets; trial.microSaccades.X.offsets]);
-trial.microSaccades.Y.offsets = sort([trial.saccades.Y.fixOffsets; trial.microSaccades.Y.offsets]);
 trial.microSaccades.offsets = [trial.microSaccades.X.offsets; trial.microSaccades.Y.offsets];
 
 % calculate saccade amplitudes
@@ -138,7 +134,7 @@ trial.microSaccades.X.velocity = [microSaccadesXXvelocity; microSaccadesYXveloci
 trial.microSaccades.Y.velocity = [microSaccadesXYvelocity; microSaccadesYYvelocity];
 
 trial.microSaccades.velocities = sqrt(trial.microSaccades.X.velocity.^2 + trial.microSaccades.Y.velocity.^2);
-trial.microSaccades.peakVelocity = nanmean(sqrt(trial.microSaccades.X.peakVelocity.^2 + trial.microSaccades.Y.peakVelocity.^2));
-trial.microSaccades.meanVelocity = nanmean(sqrt(trial.microSaccades.X.meanVelocity.^2 + trial.microSaccades.Y.meanVelocity.^2));
+trial.microSaccades.peakVelocity = nanmax(sqrt(trial.microSaccades.X.velocity.^2 + trial.microSaccades.Y.velocity.^2));
+trial.microSaccades.meanVelocity = nanmean(sqrt(trial.microSaccades.X.velocity.^2 + trial.microSaccades.Y.velocity.^2));
 
 end

@@ -22,49 +22,55 @@ trial.X_interpolSac = trial.eyeX_filt;
 trial.Y_interpolSac = trial.eyeY_filt;
 trial.DX_interpolSac = trial.eyeDX_filt;
 trial.DY_interpolSac = trial.eyeDY_filt;
+trial.DDX_noSac = trial.eyeDDX_filt;
+trial.DDY_noSac = trial.eyeDDY_filt;
 trial.quickphases = false(trial.length,1);
 % now remove saccadic phase
-for i = 1:length(trial.saccades.X.onsetsDuring)
+for i = 1:length(trial.saccades.X.onsets)
     % first we calculate the slope between the eye position at saccade on-
     % to saccade offset
-    lengthSacX = trial.saccades.X.offsetsDuring(i) - trial.saccades.X.onsetsDuring(i);
-    slopeX = (trial.eyeX_filt(trial.saccades.X.offsetsDuring(i))-trial.eyeX_filt(trial.saccades.X.onsetsDuring(i)))./lengthSacX;
-    slopeDX = (trial.eyeDX_filt(trial.saccades.X.offsetsDuring(i))-trial.eyeDX_filt(trial.saccades.X.onsetsDuring(i)))./lengthSacX;
-    slopeY = (trial.eyeY_filt(trial.saccades.X.offsetsDuring(i))-trial.eyeY_filt(trial.saccades.X.onsetsDuring(i)))./lengthSacX;
-    slopeDY = (trial.eyeDY_filt(trial.saccades.X.offsetsDuring(i))-trial.eyeDY_filt(trial.saccades.X.onsetsDuring(i)))./lengthSacX;
+    lengthSacX = trial.saccades.X.offsets(i) - trial.saccades.X.onsets(i);
+    slopeX = (trial.eyeX_filt(trial.saccades.X.offsets(i))-trial.eyeX_filt(trial.saccades.X.onsets(i)))./lengthSacX;
+    slopeDX = (trial.eyeDX_filt(trial.saccades.X.offsets(i))-trial.eyeDX_filt(trial.saccades.X.onsets(i)))./lengthSacX;
+    slopeY = (trial.eyeY_filt(trial.saccades.X.offsets(i))-trial.eyeY_filt(trial.saccades.X.onsets(i)))./lengthSacX;
+    slopeDY = (trial.eyeDY_filt(trial.saccades.X.offsets(i))-trial.eyeDY_filt(trial.saccades.X.onsets(i)))./lengthSacX;
     % now we can add a completely de-saccaded variable in trial
-    trial.X_noSac(trial.saccades.X.onsetsDuring(i):trial.saccades.X.offsetsDuring(i)) = NaN;
-    trial.Y_noSac(trial.saccades.X.onsetsDuring(i):trial.saccades.X.offsetsDuring(i)) = NaN;
-    trial.DX_noSac(trial.saccades.X.onsetsDuring(i):trial.saccades.X.offsetsDuring(i)) = NaN;
-    trial.DY_noSac(trial.saccades.X.onsetsDuring(i):trial.saccades.X.offsetsDuring(i)) = NaN;
+    trial.X_noSac(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) = NaN;
+    trial.Y_noSac(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) = NaN;
+    trial.DX_noSac(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) = NaN;
+    trial.DY_noSac(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) = NaN;
+    trial.DDX_noSac(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) = NaN;
+    trial.DDY_noSac(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) = NaN;
     % and finally interpolate the eye position if we later want to plot
     % smoot eye movement traces
     for j = 1:lengthSacX+1
-        trial.X_interpolSac(trial.saccades.X.onsetsDuring(i)-1+j) = trial.eyeX_filt(trial.saccades.X.onsetsDuring(i)) + slopeX*j;
-        trial.Y_interpolSac(trial.saccades.X.onsetsDuring(i)-1+j) = trial.eyeY_filt(trial.saccades.X.onsetsDuring(i)) + slopeY*j;
-        trial.DX_interpolSac(trial.saccades.X.onsetsDuring(i)-1+j) = trial.eyeDX_filt(trial.saccades.X.onsetsDuring(i)) + slopeDX*j;
-        trial.DY_interpolSac(trial.saccades.X.onsetsDuring(i)-1+j) = trial.eyeDY_filt(trial.saccades.X.onsetsDuring(i)) + slopeDY*j;
+        trial.X_interpolSac(trial.saccades.X.onsets(i)-1+j) = trial.eyeX_filt(trial.saccades.X.onsets(i)) + slopeX*j;
+        trial.Y_interpolSac(trial.saccades.X.onsets(i)-1+j) = trial.eyeY_filt(trial.saccades.X.onsets(i)) + slopeY*j;
+        trial.DX_interpolSac(trial.saccades.X.onsets(i)-1+j) = trial.eyeDX_filt(trial.saccades.X.onsets(i)) + slopeDX*j;
+        trial.DY_interpolSac(trial.saccades.X.onsets(i)-1+j) = trial.eyeDY_filt(trial.saccades.X.onsets(i)) + slopeDY*j;
     end   
 end
 % do the exact same thing for y
-for i = 1:length(trial.saccades.Y.onsetsDuring)
+for i = 1:length(trial.saccades.Y.onsets)
     
-    lengthSacY = trial.saccades.Y.offsetsDuring(i) - trial.saccades.Y.onsetsDuring(i);
-    slopeY = (trial.eyeY_filt(trial.saccades.Y.offsetsDuring(i))-trial.eyeY_filt(trial.saccades.Y.onsetsDuring(i)))./lengthSacY;
-    slopeDY = (trial.eyeDY_filt(trial.saccades.Y.offsetsDuring(i))-trial.eyeDY_filt(trial.saccades.Y.onsetsDuring(i)))./lengthSacY;
-    slopeX = (trial.eyeX_filt(trial.saccades.Y.offsetsDuring(i))-trial.eyeX_filt(trial.saccades.Y.onsetsDuring(i)))./lengthSacY;
-    slopeDX = (trial.eyeDX_filt(trial.saccades.Y.offsetsDuring(i))-trial.eyeDX_filt(trial.saccades.Y.onsetsDuring(i)))./lengthSacY;
+    lengthSacY = trial.saccades.Y.offsets(i) - trial.saccades.Y.onsets(i);
+    slopeY = (trial.eyeY_filt(trial.saccades.Y.offsets(i))-trial.eyeY_filt(trial.saccades.Y.onsets(i)))./lengthSacY;
+    slopeDY = (trial.eyeDY_filt(trial.saccades.Y.offsets(i))-trial.eyeDY_filt(trial.saccades.Y.onsets(i)))./lengthSacY;
+    slopeX = (trial.eyeX_filt(trial.saccades.Y.offsets(i))-trial.eyeX_filt(trial.saccades.Y.onsets(i)))./lengthSacY;
+    slopeDX = (trial.eyeDX_filt(trial.saccades.Y.offsets(i))-trial.eyeDX_filt(trial.saccades.Y.onsets(i)))./lengthSacY;
     
-    trial.X_noSac(trial.saccades.Y.onsetsDuring(i):trial.saccades.Y.offsetsDuring(i)) = NaN;
-    trial.Y_noSac(trial.saccades.Y.onsetsDuring(i):trial.saccades.Y.offsetsDuring(i)) = NaN;
-    trial.DX_noSac(trial.saccades.Y.onsetsDuring(i):trial.saccades.Y.offsetsDuring(i)) = NaN;
-    trial.DY_noSac(trial.saccades.Y.onsetsDuring(i):trial.saccades.Y.offsetsDuring(i)) = NaN;
+    trial.X_noSac(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) = NaN;
+    trial.Y_noSac(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) = NaN;
+    trial.DX_noSac(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) = NaN;
+    trial.DY_noSac(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) = NaN;
+    trial.DDX_noSac(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) = NaN;
+    trial.DDY_noSac(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) = NaN;
     
     for j = 1:lengthSacY+1
-        trial.Y_interpolSac(trial.saccades.Y.onsetsDuring(i)-1+j) = trial.eyeY_filt(trial.saccades.Y.onsetsDuring(i)) + slopeY*j;
-        trial.X_interpolSac(trial.saccades.Y.onsetsDuring(i)-1+j) = trial.eyeX_filt(trial.saccades.Y.onsetsDuring(i)) + slopeX*j;
-        trial.DY_interpolSac(trial.saccades.Y.onsetsDuring(i)-1+j) = trial.eyeDY_filt(trial.saccades.Y.onsetsDuring(i)) + slopeDY*j;
-        trial.DX_interpolSac(trial.saccades.Y.onsetsDuring(i)-1+j) = trial.eyeDX_filt(trial.saccades.Y.onsetsDuring(i)) + slopeDX*j;
+        trial.Y_interpolSac(trial.saccades.Y.onsets(i)-1+j) = trial.eyeY_filt(trial.saccades.Y.onsets(i)) + slopeY*j;
+        trial.X_interpolSac(trial.saccades.Y.onsets(i)-1+j) = trial.eyeX_filt(trial.saccades.Y.onsets(i)) + slopeX*j;
+        trial.DY_interpolSac(trial.saccades.Y.onsets(i)-1+j) = trial.eyeDY_filt(trial.saccades.Y.onsets(i)) + slopeDY*j;
+        trial.DX_interpolSac(trial.saccades.Y.onsets(i)-1+j) = trial.eyeDX_filt(trial.saccades.Y.onsets(i)) + slopeDX*j;
     end    
 end
 % done

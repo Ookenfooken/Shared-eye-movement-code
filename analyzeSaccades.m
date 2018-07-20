@@ -26,8 +26,8 @@ end
 trial.saccades.Y.onsets = [];
 trial.saccades.Y.offsets = [];
 for i = 1:length(saccades.Y.onsets)    
-    trial.saccades.Y(i,1) = saccades.Y.onsets(i);
-    trial.saccades.Y(i,1) = saccades.Y.offsets(i);
+    trial.saccades.Y.onsets(i,1) = saccades.Y.onsets(i);
+    trial.saccades.Y.offsets(i,1) = saccades.Y.offsets(i);
 end
 % store all found on and offsets together
 trial.saccades.onsets = [trial.saccades.X.onsets; trial.saccades.Y.onsets];
