@@ -14,10 +14,11 @@ function [trial, pursuit] = analyzeTrialAutomatic(eyeFiles, currentTrial, curren
     %  eye data have been converted in readEDF
     %  first step: read in converted eye data
     ascFile = eyeFiles(currentTrial,1).name;
-    eyeData = readEyeData(ascFile, dataPath, currentSubject, analysisPath, syncIdx);
+    eyeData = readEyeData(ascFile, dataPath, currentSubject, analysisPath);
     eyeData = processEyeData(eyeData); % equivalent to socscalexy
 
-
+	% set up trial structure
+	trial = readoutTrial(eyeData, currentTrial, currentSubject); 
     %% find saccades
 	threshold = evalin('base', 'saccadeThreshold');
 	[saccades.X.onsets, saccades.X.offsets] = findSaccades(onset, offset, trial.eyeDX_filt, trial.eyeDDX_filt, threshold, stimulusVelocityX);
