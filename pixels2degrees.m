@@ -8,23 +8,40 @@
 % input: pixX --> x-pixel values
 %        pixY --> y-pixel values
 % output: degrees.X/Y --> structure containing converted data
+% Notice: pixX and pixY should start from the center of the screen, 
+% since position matters; to calculate a length centered in the screen, 
+% first use half of the pixels to get the degree, then multiply by 2; 
+% to calculate a peripheral length, for example a line from eccentricity 
+% 7 (say the center of screen is 0, and the position of the start of 
+% the line in pixel is x1) to eccentricity 9 (position in pixel is x2), 
+% calculate degrees of 0 to x2 first (should be 9), then minus the 
+% degrees of 0 to x1 (should be 7)
+%
+% Aug-2018 HK changed the calculation to get more accurate degrees.
+% 11/22/2018 XiuyunWu changed the calculation again, for more accurate
+% degrees, this time not using degree per pixel
 
 function [degrees] = pixels2degrees(pixX, pixY)
+
 % get resolution and distance necessary for conversion from main working
 % directory
-screenSizeX = evalin('base', 'screenSizeX');
-screenSizeY = evalin('base', 'screenSizeY');
-screenResX = evalin('base', 'screenResX');
-screenResY = evalin('base', 'screenResY');
-distance = evalin('base', 'distance');
+evalin('base', 'screenSizeX');
+evalin('base', 'screenSizeY');
+evalin('base', 'screenResX');
+evalin('base', 'screenResY');
+evalin('base', 'distance');
 % calculate the size of a pixel in cm
 pixSizeCmX = screenSizeX./screenResX; 
 pixSizeCmY = screenSizeY./screenResY;
-% calculate degree per pixel value
-degperpixX=(2*atan(pixSizeCmX./(2*distance))).*(180/pi);
-degperpixY=(2*atan(pixSizeCmY./(2*distance))).*(180/pi);
-% convert from pixel to degrees
-degrees.degX = degperpixX.*pixX;
-degrees.degY = degperpixY.*pixY;
+
+%%%%%%%%%% New: Not using degPerPix %%%%%%%%%%
+% calculate the size of x and y in cm
+cmX = pixX.*pixSizeCmX;
+cmY = pixY.*pixSizeCmY;
+
+% convert from cm to degrees
+degrees.degX = atan(cmX./distance).*(180/pi);
+degrees.degY = atan(cmY./distance).*(180/pi)
+
 
 end
