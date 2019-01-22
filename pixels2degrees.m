@@ -25,11 +25,11 @@ function [degrees] = pixels2degrees(pixX, pixY)
 
 % get resolution and distance necessary for conversion from main working
 % directory
-evalin('base', 'screenSizeX');
-evalin('base', 'screenSizeY');
-evalin('base', 'screenResX');
-evalin('base', 'screenResY');
-evalin('base', 'distance');
+screenSizeX = evalin('base', 'screenSizeX');
+screenSizeY = evalin('base', 'screenSizeY');
+screenResX = evalin('base', 'screenResX');
+screenResY = evalin('base', 'screenResY');
+distance = evalin('base', 'distance');
 % calculate the size of a pixel in cm
 pixSizeCmX = screenSizeX./screenResX; 
 pixSizeCmY = screenSizeY./screenResY;
@@ -41,7 +41,7 @@ cmY = pixY.*pixSizeCmY;
 
 % convert from cm to degrees
 degrees.degX = atan(cmX./distance).*(180/pi);
-degrees.degY = atan(cmY./distance).*(180/pi)
+degrees.degY = atan(cmY./distance).*(180/pi);
 
 
 end
