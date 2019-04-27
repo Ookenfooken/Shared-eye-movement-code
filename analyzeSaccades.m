@@ -6,6 +6,12 @@
 % 13-07-2018    JF commented to make the script more accecable for future
 %               VPOM students
 % for questions email jolande.fooken@rwth-aachen.de
+% 26-04-2018    XW modified the way to find peak velocity--take "baseline"
+% velocity the saccade is based on into account; for example, if the
+% saccade occur during pursuit at 10 deg/s, and the peak velocity is -5
+% deg/s, then simply using max(abs(velocity)) would not find the correct
+% peak.
+% for questions email xiuyunwu5@gmail.com
 %
 % input: trial --> structure containing relevant current trial information
 %        saccades --> output from findSaccades.m; contains on- & offsets
@@ -112,8 +118,14 @@ saccadesXYpeakVelocity = NaN(length(trial.saccades.X.onsets),1);
 saccadesXXmeanVelocity = NaN(length(trial.saccades.X.onsets),1);
 saccadesXYmeanVelocity = NaN(length(trial.saccades.X.onsets),1);
 for i = 1:length(trial.saccades.X.onsets)
-    saccadesXXpeakVelocity(i) = max(abs(trial.eyeDX_filt(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i))));
-    saccadesXYpeakVelocity(i) = max(abs(trial.eyeDY_filt(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i))));
+    % calculate baseline velocity this saccade is based on
+    baseX = mean([trial.eyeDX_filt(trial.saccades.X.onsets(i)); trial.eyeDX_filt(trial.saccades.X.offsets(i))]);
+    baseY = mean([trial.eyeDY_filt(trial.saccades.X.onsets(i)); trial.eyeDY_filt(trial.saccades.X.offsets(i))]);
+    % when looking for max abs velocity values--peak in the velocity curve, count in the baseline
+    % velocity first; then after finding the value correct for the baseline
+    % to get the true value of the peak
+    saccadesXXpeakVelocity(i) = nanmax( abs( trial.eyeDX_filt(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) - baseX ) ) - abs(baseX);
+    saccadesXYpeakVelocity(i) = nanmax( abs( trial.eyeDY_filt(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i)) - baseY ) ) - abs(baseY);
     saccadesXXmeanVelocity(i) = nanmean(abs(trial.eyeDX_filt(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i))));
     saccadesXYmeanVelocity(i) = nanmean(abs(trial.eyeDY_filt(trial.saccades.X.onsets(i):trial.saccades.X.offsets(i))));
 end
@@ -122,8 +134,10 @@ saccadesYXpeakVelocity = NaN(length(trial.saccades.Y.onsets),1);
 saccadesYYmeanVelocity = NaN(length(trial.saccades.Y.onsets),1);
 saccadesYXmeanVelocity = NaN(length(trial.saccades.Y.onsets),1);
 for i = 1:length(trial.saccades.Y.onsets)
-    saccadesYYpeakVelocity(i) = max(abs(trial.eyeDY_filt(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i))));
-    saccadesYXpeakVelocity(i) = max(abs(trial.eyeDX_filt(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i))));
+    baseX = mean([trial.eyeDX_filt(trial.saccades.Y.onsets(i)); trial.eyeDX_filt(trial.saccades.Y.offsets(i))]);
+    baseY = mean([trial.eyeDY_filt(trial.saccades.Y.onsets(i)); trial.eyeDY_filt(trial.saccades.Y.offsets(i))]);
+    saccadesYYpeakVelocity(i) = nanmax( abs( trial.eyeDY_filt(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) - baseY ) ) - abs(baseY);
+    saccadesYXpeakVelocity(i) = nanmax( abs( trial.eyeDX_filt(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i)) - baseX ) ) - abs(baseX);
     saccadesYYmeanVelocity(i) = nanmean(abs(trial.eyeDY_filt(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i))));
     saccadesYXmeanVelocity(i) = nanmean(abs(trial.eyeDX_filt(trial.saccades.Y.onsets(i):trial.saccades.Y.offsets(i))));
 end

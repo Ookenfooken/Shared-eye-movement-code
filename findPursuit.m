@@ -9,6 +9,7 @@
 % 13-07-2018    JF commented to make the script more accecable for future
 %               VPOM students
 % for questions email jolande.fooken@rwth-aachen.de
+% 26-04-2018    XW added some comments about changeDetect (xiuyunwu5@gmail.com)
 %
 % input: trial --> structure containing relevant current trial information
 % output: pursuit --> structure containing info about pursuit onset
@@ -33,7 +34,9 @@ if endTime-startTime < 10
 else   
     time = startTime:endTime;
     fixationInterval = 275; % chose an interval before stimulus onset that
-    % we will use as fixation window; needs to be at least 201 ms
+    % we will use as fixation window; needs to be at least 201 ms--in my
+    % understanding it just serves as a baseline for the velocity curve to
+    % be fitted
     if trial.stim_onset > fixationInterval
         fix_x = mean(trial.eyeDX_filt(trial.stim_onset-ms2frames(fixationInterval):trial.stim_onset-ms2frames(fixationInterval-100)));
         fix_y = mean(trial.eyeDY_filt(trial.stim_onset-ms2frames(fixationInterval):trial.stim_onset-ms2frames(fixationInterval-100)));
@@ -41,10 +44,18 @@ else
         fix_x = mean(trial.eyeDX_filt(trial.stim_onset-ms2frames(fixationInterval-100):trial.stim_onset-ms2frames(fixationInterval-200)));
         fix_y = mean(trial.eyeDY_filt(trial.stim_onset-ms2frames(fixationInterval-100):trial.stim_onset-ms2frames(fixationInterval-200)));
     end    
-    % 2. calculate 2D vector relative to fixation position
+    % 2. calculate 2D velocity vector
     dataxy_tmp = sqrt( (trial.eyeDX_filt-fix_x).^2 + (trial.eyeDY_filt-fix_y).^2 );
     XY = dataxy_tmp(time);       
-    % run changeDetect.m
+    % run changeDetect.m to find the time of pursuit onset
+    % Basically we assume the velocity curve from fixation to steady-state
+    % pursuit to be a two-breakpoint piecewise linear model, and this
+    % function can be used to find either one breakpoint (should only include 
+    % one breakpoint in XY to be accurate).
+    %                                       ---------------- steady-state
+    %                                      / initiation phase end
+    %                                     /
+    % fixation__________/ pursuit onset
     [cx,cy,ly,ry] = changeDetect(time,XY);  
     pursuit.onset = round(cx);
     % this next part has been written by JF to make sure that the pursuit
