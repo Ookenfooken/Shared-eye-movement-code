@@ -7,9 +7,9 @@
 % for questions email jolande.fooken@rwth-aachen.de and/or 
 %                     janick.edinger@uni-mannheim.de
 % 26-04-2018    XW added acceleration threshold for saccades, in case
-% sometimes part of the pursuit right after saccades was included, or
-% sometimes pursuit to the opposite direction (such as for low coherence 
-% motion) was counted as saccades.
+% sometimes part of the pursuit right before or after saccades was 
+% included, or sometimes pursuit to the opposite direction (such as 
+% for low coherence motion) was counted as saccades.
 % for questions email xiuyunwu5@gmail.com
 % 
 % input: stim_onset --> start of the period you want to find saccades in
