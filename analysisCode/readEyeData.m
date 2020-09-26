@@ -15,7 +15,7 @@
 % output: eyeData --> matrix containing eye data in pixels (eyeData.rawX/Y)
 %                     and in visual degrees (eyeData.X/Y)
 
-function [eyeData] = readEyeData(ascFile, dataPath, currentSubject, analysisPath, trialStart)
+function [eyeData] = readEyeData(ascFile, dataPath, currentSubject, analysisPath, trialStartIdx, trialEndIdx)
     % get screen resolution from main work space
     screenResX = evalin('base', 'screenResX');
     screenResY = evalin('base', 'screenResY');
@@ -23,18 +23,22 @@ function [eyeData] = readEyeData(ascFile, dataPath, currentSubject, analysisPath
     currentSubjectPath = fullfile(dataPath, currentSubject);
     cd(currentSubjectPath);
     % load eye movement file
-    allData = load(ascFile);
+%     allData = load(ascFile);
+    load(ascFile)
+    trialStartIdx = find(allData(:, 1)==trialStartIdx);
+    trialEndIdx = find(allData(:, 1)==trialEndIdx);
+    
     % replace blinks/signal loss (samples > 9000) with 0
     % convert to screen centred frame 
     % for eye data in X
-    eyeDataX = allData(trialStart:end,2);
+    eyeDataX = allData(trialStartIdx:trialEndIdx,2);
     replace = eyeDataX > 9000;
-    eyeDataX(replace) = screenResX/2;
+    eyeDataX(replace) = 0;
     eyeDataTempX = eyeDataX-(screenResX/2);
     % and Y
-    eyeDataY = allData(trialStart:end,3);
+    eyeDataY = allData(trialStartIdx:trialEndIdx,3);
     replace = eyeDataY > 9000;
-    eyeDataY(replace) = screenResY/2;
+    eyeDataY(replace) = 0;
     eyeDataTempY = (screenResY/2)-eyeDataY;
     % go back to main working directory
     cd(analysisPath);
@@ -47,5 +51,6 @@ function [eyeData] = readEyeData(ascFile, dataPath, currentSubject, analysisPath
     eyeData.rawX = eyeDataX;
     eyeData.rawY = eyeDataY;
     
+    eyeData.frameIdx = allData(trialStartIdx:trialEndIdx,1);
 end
 
