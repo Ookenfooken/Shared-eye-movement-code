@@ -12,6 +12,7 @@
 % 09/25/2020    XW modified the function; read in blocked edf, and eventually output trial asc. xiuyunwu5@gmail.com
 
 % DC check github by uploading
+% DC check github again 3:50pm
 
 close all;
 clear all;
