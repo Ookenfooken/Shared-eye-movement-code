@@ -1,0 +1,16 @@
+
+
+	 ----------------------------------- 
+	|         Gamma calibration           |
+	 ----------------------------------- 
+
+	 Screen ID : 			EyeStrike
+	 Screen distance : 		44 cm
+	 Calibration type : 	GRAY linearized
+	 Creation date : 		02-Aug-2019
+	 Creation time : 		16:35
+
+	 Max RED lum. : 		9.737000e+01
+	 Max GREEN lum. : 		1.511000e+02
+	 Max BLUE lum. : 		8.529000e+00
+	 Max GRAY lum. : 		2.557000e+02

@@ -1,0 +1,16 @@
+
+
+	 ----------------------------------- 
+	|         Gamma calibration           |
+	 ----------------------------------- 
+
+	 Screen ID : 			DPI_Koerner
+	 Screen distance : 		85 cm
+	 Calibration type : 	GRAY linearized
+	 Creation date : 		22-Oct-2019
+	 Creation time : 		19:50
+
+	 Max RED lum. : 		1.770000e+01
+	 Max GREEN lum. : 		4.413000e+01
+	 Max BLUE lum. : 		9.718000e+00
+	 Max GRAY lum. : 		5.578000e+01
