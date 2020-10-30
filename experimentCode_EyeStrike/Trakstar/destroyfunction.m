@@ -1,0 +1,2 @@
+function destroyfunction()
+end
