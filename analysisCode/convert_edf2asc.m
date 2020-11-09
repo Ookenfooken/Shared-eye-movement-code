@@ -21,7 +21,7 @@ cd ..
 dataPath = fullfile(pwd,'data\'); % assuming that the data folder is in the start folder
 folderNames = dir(dataPath); % this will be a list of all folders in the data folder, e.g. a list of all subjects
 currentSubject = {};
-trialPerBlock = 4;
+trialPerBlock = 40;
 nHeader = 10; % this number depends on data collection; lines to skip when reading out messages
 
 %% STEP 2
@@ -55,31 +55,30 @@ for i = 3:length(folderNames) % we are starting at 3 because matlab always has 2
         entries = textscan(fid, '%s %s %s %s %s %s %s %*[^\n]');
         for lineN = 1:size(entries{1}, 1)
             if strcmp(entries{1}{lineN}, 'MSG')
-                if strcmp(entries{3}{lineN}, 'TRIALID')
-                    trialN = str2num(entries{4}{lineN})+(blockN-1)*trialPerBlock;
-                    frameCount = 1;
-                elseif strcmp(entries{3}{lineN}, 'GAZE_COORDS') % check the original codes on the pc... but, well...
-                    targetLog.screenX(trialN, 1) = str2num(entries{6}{lineN})+1;
-                    targetLog.screenY(trialN, 1) = str2num(entries{7}{lineN})+1;
-                elseif strcmp(entries{3}{lineN}, '!MODE') && strcmp(entries{4}{lineN}, 'RECORD')
-                    targetLog.recordingStart(trialN, 1) = str2num(entries{2}{lineN});
-                elseif strcmp(entries{3}{lineN}, '!V') && strcmp(entries{4}{lineN}, 'TARGET_POS')
-                    targetLog.time(trialN, frameCount) = str2num(entries{2}{lineN});
-                    targetLog.posX(trialN, frameCount) = str2num(entries{6}{lineN}(2:end-1));
-                    targetLog.posY(trialN, frameCount) = str2num(entries{7}{lineN}(1:end-1));
-                    frameCount = frameCount+1;
-                elseif strcmp(entries{5}{lineN}, 'freq_x') % check the original codes on the pc... but, well...
-                    targetLog.freqX(trialN, 1) = str2num(entries{6}{lineN});
-                elseif strcmp(entries{5}{lineN}, 'freq_y') % check the original codes on the pc... but, well...
-                    targetLog.freqY(trialN, 1) = str2num(entries{6}{lineN});
+                if strcmp(entries{3}{lineN}, 'TrialID:')
+                    trialN = str2num(entries{4}{lineN});
+                elseif strcmp(entries{3}{lineN}, 'SYNCTIME')
+                    eventLog.trialStart(trialN, 1) = str2num(entries{2}{lineN});
+                elseif strcmp(entries{3}{lineN}, 'fixationOn')
+                    eventLog.fixationOn(trialN, 1) = str2num(entries{2}{lineN}); % read frame idx in original data
+                elseif strcmp(entries{3}{lineN}, 'rdkOn')
+                    eventLog.rdkOn(trialN, 1) = str2num(entries{2}{lineN});
+                elseif strcmp(entries{3}{lineN}, 'rdkOff')
+                    eventLog.rdkOff(trialN, 1) = str2num(entries{2}{lineN});
+                    eventLog.respondEarly(trialN, 1) = 0;
+                elseif strcmp(entries{3}{lineN}, 'rdkOffEarly')
+                    eventLog.rdkOff(trialN, 1) = str2num(entries{2}{lineN});
+                    eventLog.respondEarly(trialN, 1) = 1;
+                elseif strcmp(entries{3}{lineN}, 'respond')
+                    eventLog.respond(trialN, 1) = str2num(entries{2}{lineN});
+                elseif strcmp(entries{3}{lineN}, 'TRIALEND')
+                    eventLog.trialEnd(trialN, 1) = str2num(entries{2}{lineN});
                 end
-            elseif strcmp(entries{1}{lineN}, 'END') % check the original codes on the pc... but, well...
-                targetLog.recordingOff(trialN, 1) = str2num(entries{2}{lineN})-1;
             end
         end
         fclose(fid);
     end
-    save('targetLog.mat', 'targetLog')
+    save('eventLog.mat', 'eventLog')
     %     STEP 2.3
     %     convert data into samples only and replace missing values with 9999
     [res, stat] = system([startFolder 'edf2asc -y -s -miss 9999 -nflags ' currentFolder '\*.edf']);
@@ -92,11 +91,10 @@ for i = 3:length(folderNames) % we are starting at 3 because matlab always has 2
         rawAsc = load(ascFiles(blockN, 1).name);
         for trialN = 1:trialPerBlock
             currentTrial = trialN+(blockN-1)*trialPerBlock;
-            startI = find(rawAsc(:, 1)==targetLog.recordingStart(currentTrial, 1));
-            endI = find(rawAsc(:, 1)==(targetLog.recordingOff(currentTrial, 1))); 
+            startI = find(rawAsc(:, 1)==eventLog.trialStart(currentTrial, 1));
+            endI = find(rawAsc(:, 1)==(eventLog.trialEnd(currentTrial, 1))); 
             allData = rawAsc(startI:endI, :);
             save([currentSubject{i-2}, 't', num2str(currentTrial, '%02d'), '.mat'], 'allData')
-            %         currentTrial = currentTrial+1;
         end
     end
 end

@@ -17,11 +17,11 @@ function [] = updateText(trial, fig)
 screenSize = get(0,'ScreenSize');
 name = evalin('base', 'name');
 % chose position of the text box
-xPosition = 10; 
-yPosition = 350;%screenSize(4)-screenSize(4)*2/3; 
+xPosition = 10; %screenSize(3)*2/3-50;
+yPosition = 270; %screenSize(4)-screenSize(4)/2; %screenSize(4)*2/5-50;
 % how large should it be?
 verticalDistance = 20;
-width = 110 ;
+width = 100;
 height = 20;
 textblock = 0;
 
@@ -32,42 +32,31 @@ subjectIdText = uicontrol(fig,'Style','text',...
     'HorizontalAlignment','left'); %#ok<*NASGU>
 
 textblock = textblock+1;
-if trial.log.trialType==0
-    trialType = 'perceptual';
-else
-    trialType = 'standard';
-end
 trialNoText = uicontrol(fig,'Style','text',...
     'String', ['Trial No.: ' num2str(trial.log.trialNumber)],...
     'Position',[xPosition yPosition-textblock*verticalDistance width height],...
     'HorizontalAlignment','left');
 
+if trial.log.rdkDirMean>0
+    rdkDir = 'up';
+else
+    rdkDir = 'down';
+end
 textblock = textblock+1;
-if trial.log.trialType==0
-    trialType = ['p-', num2str(abs(trial.log.coh*100)), '%'];
-else
-    trialType = 's';
-end
-
-if trial.log.coh<0
-    direction = 'L';
-elseif trial.log.coh>0
-    direction = 'R';
-else
-    direction = 'N';
-end
-
-if trial.log.choice==0
-    choice = 'L';
-elseif trial.log.choice==1
-    choice = 'R';
-else
-    choice = 'N';
-end
-
 trialNoText = uicontrol(fig,'Style','text',...
-    'String', ['Trial type: ' trialType ' (' direction ', choice ', choice, ')'],...
-    'Position',[xPosition yPosition-textblock*verticalDistance width height+5],...
+    'String', ['RDK dir: ' rdkDir],...
+    'Position',[xPosition yPosition-textblock*verticalDistance width height],...
+    'HorizontalAlignment','left');
+
+if trial.log.choice>0
+    choice = 'up';
+else
+    choice = 'down';
+end
+textblock = textblock+1;
+trialNoText = uicontrol(fig,'Style','text',...
+    'String', ['Choice: ', choice],...
+    'Position',[xPosition yPosition-textblock*verticalDistance width height],...
     'HorizontalAlignment','left');
 
 end

@@ -14,7 +14,7 @@
 % output: trial --> a structure containing all relevant information for
 %                   each trial
 
-function [trial] = readoutTrial(eyeData, currentSubject, analysisPath, parameters, currentTrial, eventLog)
+function [trial] = readoutTrial(eyeData, currentSubject, analysisPath, Experiment, currentTrial, eventLog)
 % get eyeData for this trial
 trial.eyeX_filt = eyeData.X_filt;
 trial.eyeY_filt = eyeData.Y_filt;
@@ -32,16 +32,14 @@ trial.eyeDDDY = eyeData.DDDY;
 % for example stimulus speed, fixation duration and other events
 trial.log.subject = currentSubject;
 trial.log.trialNumber = currentTrial;
-trial.log.trialType = parameters.trialType(currentTrial, 1); % 0-perceptual trial, 1-standard trial
-trial.log.prob = parameters.prob(currentTrial, 1); % n%
-trial.log.rdkDir = parameters.rdkDir(currentTrial, 1); % -1=left, 1=right, 0=0 coherence, no direction
-trial.log.coh = parameters.coh(currentTrial, 1)*parameters.rdkDir(currentTrial, 1); % negative-left, positive-right
-trial.log.choice = parameters.choice(currentTrial, 1); % 0-left, 1-right
-trial.stimulus.absoluteVelocity = 10;
+trial.log.rdkDirMean = -Experiment.trialData.dotDirMean(currentTrial, 1); % positive is up, negative is down
+trial.log.rdkDirVar = Experiment.trialData.choice(currentTrial, 1); % variance
+trial.log.choice = -Experiment.trialData.choice(currentTrial, 1); % -1 = down, 1 = up
+trial.stimulus.absoluteVelocity = Experiment.const.rdk.speed;
 
 % frame indices of all events; after comparing eventLog with eyeData.frameIdx
 trial.log.trialStart = 1; % the first frame, fixation onset, decided in readEyeData
-trial.log.fixationOff = find(eyeData.frameIdx==eventLog.fixationOff(currentTrial, 1));
 trial.log.targetOnset = find(eyeData.frameIdx==eventLog.rdkOn(currentTrial, 1)); % rdk onset
-trial.log.trialEnd = find(eyeData.frameIdx==eventLog.rdkOff(currentTrial, 1)); % rdk offset
+trial.log.targetOffset = find(eyeData.frameIdx==eventLog.rdkOff(currentTrial, 1)); % rdk offset
+trial.log.trialEnd = find(eyeData.frameIdx==eventLog.respond(currentTrial, 1)); % response given
 end
