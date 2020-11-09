@@ -26,8 +26,8 @@ stimOffset = trial.log.trialEnd;
 % range of the x axis
 minPos = -10;
 maxPos = 10;
-minVel = -20;
-maxVel = 20;
+minVel = -10;
+maxVel = 10;
 minAcc = -500;
 maxAcc = 500;
 minJerk = -300000;

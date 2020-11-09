@@ -22,6 +22,7 @@ dataPath = fullfile(pwd,'data\'); % assuming that the data folder is in the star
 folderNames = dir(dataPath); % this will be a list of all folders in the data folder, e.g. a list of all subjects
 currentSubject = {};
 trialPerBlock = 40;
+eventLog = table();
 nHeader = 10; % this number depends on data collection; lines to skip when reading out messages
 
 %% STEP 2

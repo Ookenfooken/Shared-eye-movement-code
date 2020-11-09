@@ -78,10 +78,10 @@ analyzeTrial;
 plotResults;
 % finishButton.m and markError.m currently not in use
 buttons.discardTrial = uicontrol(fig,'string','!Discard trial!(1) >>','Position',[0,300,100,30],...
-    'callback', 'errorStatus(currentTrial)=1;currentTrial = currentTrial+1;analyzeTrial;plotResults;');
+    'callback', 'errorStatus(currentTrial, 1)=1;currentTrial = currentTrial+1;analyzeTrial;plotResults;');
 
 buttons.next = uicontrol(fig,'string','Next (0) >>','Position',[0,130,100,30],...
-    'callback','currentTrial = currentTrial+1;analyzeTrial;plotResults;');
+    'callback','errorStatus(currentTrial, 1)=0;currentTrial = currentTrial+1;analyzeTrial;plotResults;');
 buttons.previous = uicontrol(fig,'string','<< Previous','Position',[0,100,100,30],...
     'callback','currentTrial = max(currentTrial-1,1);analyzeTrial;plotResults');
 buttons.jumpToTrialn = uicontrol(fig,'string','Jump to trial..','Position',[0,70,100,30],...
@@ -121,7 +121,7 @@ while 1
         elseif strcmp(key,'backspace')
             currentTrial = max(currentTrial-1,1);
             analyzeTrial;
-            plotResults;0
+            plotResults;
         elseif strcmp(key,'return')
             save(errorFileName,'errorStatus');
             close(fig);
