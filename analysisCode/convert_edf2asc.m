@@ -95,7 +95,7 @@ for i = 3:length(folderNames) % we are starting at 3 because matlab always has 2
             startI = find(rawAsc(:, 1)==eventLog.trialStart(currentTrial, 1));
             endI = find(rawAsc(:, 1)==(eventLog.trialEnd(currentTrial, 1))); 
             allData = rawAsc(startI:endI, :);
-            save([currentSubject{i-2}, 't', num2str(currentTrial, '%02d'), '.mat'], 'allData')
+            save([currentSubject{i-2}, 't', num2str(currentTrial, '%03d'), '.mat'], 'allData') % if you have over 1000 trials, make it "04d"
         end
     end
 end

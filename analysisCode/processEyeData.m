@@ -15,7 +15,9 @@
 
 function [eyeData] = processEyeData(eyeData)
 %% set up filter
-sampleRate = evalin('base', 'sampleRate');
+eyeData.sampleRate = 1000/(eyeData.timeStamp(2)-eyeData.timeStamp(1)); % calculate sample rate based on the actual data
+% consider renaming sampleRate to eyeData.sampleRate (need to change variable names later, and for other places as well)?
+% sampleRate = evalin('base', 'sampleRate'); % original code
 filtFrequency = sampleRate/2;
 filtOrder = 2;
 filtCutoffPosition = 15;
