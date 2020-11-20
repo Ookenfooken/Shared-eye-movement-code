@@ -1,0 +1,35 @@
+11/20/2020 for questions email xiuyunwu5@gmail.com
+
+example (paramConfig_XW.m) for generating the table of randomized conditions using pick_paramsAll.m
+ and genCombinations.m:
+
+Basically, in paramConfig.m four types of random variables ("blockPartial", "block", "continuous", and "trial", example described as below) are defined and put into the struct "randVar" under the name of their corresponding types, then together with const.numTrialsPerBlock are passed into pick_paramsAll. Then a table "trialCondition" containing the randomized variables for each trial of the whole experiment is returned.
+
+Experimental design of the example: 16 blocks in total, and 40 trials per block. Thus const.numTrialsPerBlock would be a 1 x 16 vector with all "40"s.
+
+Conditions that are blocked: eyeCondition(pursuit/fixation), and instruction (fast/accurate). 
+"randVar.blockPartial": If blocks with the same eyeCondition x instruction are presented together, but the order of the condition combinations are randomized, then these are "blockPartial" variables. For example, the first four blocks might be fixation x fast, then the next four blocks might be pursuit x accurate, etc.
+--randVar.blockPartial.instruction = [0 1]; % 0-fast, 1-accurate;
+--randVar.blockPartial.eyeCondition = [0 1]; % 0-fixation, 1-pursuit   
+(line 57-58 in paramConfig_XW)
+
+"randVar.block": If order of blocks with different conditions are completely randomized, then these are "block" variables. For example, the first block might be fixation x fast, the second might be pursuit x accurate, the third block might be fixation x fast again, or fixation x accurate, etc.
+--randVar.block.instruction = [0 1]; % 0-fast, 1-accurate; 
+--randVar.block.eyeCondition = [0 1]; % 0-fixation, 1-pursuit
+(line 62-63 in paramConfig_XW)
+
+If both "blockPartial" and "block" conditions exist, then the overall "block" conditions within each combination of "blockPartial" will be the same. Basically a balanced design. For example, if eyeCondition is "blockPartial" and instruction is "block", the first half of the blocks might be either all "fixation" or all "pursuit"; then within each half of the blocks, there are always half "fast" and half "accurate" blocks, each block presented in completely random orders.
+
+Conditions that are randomized in each trial: 
+"randVar.continuous": a random number picked from the given uniform distribution within a range, such as fixation duration (in the example, fixation could be a random duration between 0.5 and 0.8 s); this is randomized for each trial. 
+--randVar.continuous.fixationDuration = [0.5 0.8]; 
+(line 52 in paramConfig_XW)
+
+"randVar.trial": "categorical" conditions for each trial; not that the values are categorical in nature, but each element in the vector is one condition, and the value will just be randomly picked from the vector, so different from how we randomize the "continuous" variable for each trial. In this example, in each trial the mean direction of RDK dots could be either 15 deg above/below horizontal to the right, and the variance of the dot directions could be either 30 or 70.
+--randVar.trial.dotDirSD = [30 70];
+--randVar.trial.dotDirMean = [15 -15]; 
+(line 53-54 in paramConfig_XW)
+
+The only assumption for using these functions is that there are equal number of trials in each block, and the overall trial conditions in each block are the same (dotDirMean & dotDirVar in this example; each block always have 10 trials per dotDirMean x dotDirVar condition, and 40 trials in total), just having different random orders. Again, a pretty common balanced and randomized design.
+
+"blockPartial", "block", and "trial" are supposed to be "categorical", which means the numbers are randomly picked from the vector given, and only "continuous" is randomized within the range given by the vector. If you don't have a certain type of the variables, just don't define them.
