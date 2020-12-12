@@ -65,11 +65,16 @@ end
 [const]                    = constConfig(screen, const);                    % set some constants and variables used in experiment
 [trialData]                = paramConfig(const,sbj);
 
+% if use sound:
+% [mysound]                  = soundConfig(const);
+
 %% Generate Target Trajectory and Other Stimuli:
 [const]                    = generateTargetTrajectory(const,screen);        % Moving target trajectory
 [const]                    = generateStationaryStimuli(const,screen,...     % Stationary stimuli
                                 trialData);       
-
+% if use sound:
+% [const]                    = generateSound(const,mysound,trialCondition);   % Stationary sound (at the moment)
+   
                             
 %% save all the constants and initial trialData struct:
 %% (6.1) Save complete trialData file
@@ -83,6 +88,9 @@ save([sbj.sbjFolder '/Experiment.mat'], 'Experiment');
 %% Run the Experiment with defined Settings:
 if ~const.runScreenCalib
     expMain(const, screen, eyelink, trialData, sbj);% run experiment
+    
+    % if use sound
+    %expMain(const, screen, eyelink, mysound, trialCondition, sbj);% run experiment
     
     % run convert2ascSynch for the current subject, when done:
 %     if IsWin

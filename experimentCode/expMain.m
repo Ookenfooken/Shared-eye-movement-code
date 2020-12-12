@@ -65,13 +65,13 @@ try
 
 %% (3.1) Trial Setup:
 while trialNum <= const.numTrials                                       % START TRIAL WHILE-LOOP
+    
+    % initialize trial control structure
     control                 = [];                                       % Setup a Trial Control Structure
     control.forceRecalibEL  = 0;
     control.currentTrial    = trialNum;                                 % current trial
     control.trialName       = sprintf('%.7d', trialNum);
-    control.PursuitDir      = trialData.PursuitDir(trialNum);           % pursuit direction in this trial
-    control.FlashDir        = trialData.FlashDir(trialNum);             % flash direction in this trial
-    control.tFlash          = trialData.tFlash(trialNum);
+    
     control.eyeReady        = [0 0];                                    % intial fixation (in the center)
     control.eyeReady2       = const.INTERP_TXY{control.PursuitDir}...   % second fixation (this is where eye should be at time 0, from here, the target starts moving).
         (const.INTERP_TXY{control.PursuitDir}(:,1)==0,2:3); 
@@ -80,7 +80,21 @@ while trialNum <= const.numTrials                                       % START 
     control.abort           = 0;                                        % trial abortion (ESCAPE key press)
     control.frameElapse     = 0;                                        % frame counter, updates every flip from target motion onset (i.e. when mode == 3)
     iterations              = 1;                                        % counts iterations of while-loop
-
+    
+    % stimulus condition, replaced by next code chunk
+    %control.PursuitDir      = trialData.PursuitDir(trialNum);           % pursuit direction in this trial
+    %control.FlashDir        = trialData.FlashDir(trialNum);             % flash direction in this trial
+    %control.tFlash          = trialData.tFlash(trialNum);
+    
+    % load control with trialCondition info
+    fieldnamesList = fieldnames(trialCondition);
+    for thisfield = 1:length(fieldnamesList)
+        thisfieldName = fieldnamesList{thisfield};
+        if ismember(thisfieldName, {'Properties','Row','Variables'}) == 0
+           % load trial info to control 
+           eval(sprintf('control.%s(%d) = trialCondition.%s(%d);',thisfieldName,trialNum,thisfieldName,trialNum));
+        end
+    end
     %% (3.2) Check Recalibration (i.e. recalibration between blocks)
     if (trialNum > 1 && eyelink.recalib == 1 && eyelink.mode == 1) || forceRecalibrationEL            
         eyelink_recalibration(control,const,el,forceRecalibrationEL);                            % Recalibrate Eyelink
@@ -155,10 +169,10 @@ while trialNum <= const.numTrials                                       % START 
     else
         trialData.tMainSync(trialNum)            = GetSecs;                 % for dummy mode, get the current time as synctime
         if const.makeVideo == 1                                             % settings for single-trial video:
-            trialData.tMainSync(trialNum)        = 0;                       % can change params to show here.
-            trialData.FlashDir(trialNum)         = 2;
-            trialData.tFlash(trialNum)           = 7;
-            trialData.tFlashRandVar(trialNum)    = 1;
+            control.tMainSync                    = 0;                       % can change params to show here.
+            control.FlashDir                     = 2;
+            control.tFlash                       = 7;
+            control.tFlashRandVar                = 1;
             control.FlashDir                     = 2;
             control.tFlash                       = 7;
             control.tFlashRandVar                = 1;
@@ -219,25 +233,25 @@ while trialNum <= const.numTrials                                       % START 
         [VBLTimestamp, StimulusOnsetTime, FlipTimestamp, Missed, Beampos] = Screen('Flip', screen.window);      
         % =============================================================
         % for debugging: 
-        if  ~const.startExp && control.frameElapse == trialData.tFlash(trialNum)
+        if  ~const.startExp && control.frameElapse == control.tFlash
             control.PursuitDir
             control.FlashDir
-            trialData.tFlashPosition(trialNum,:)
+            control.tFlashPosition
             control.eyeTarget
         end
         
         
         if iterations == 2
-            trialData.t_start_VBL(trialNum,:) = [VBLTimestamp, StimulusOnsetTime, FlipTimestamp, Missed, Beampos];
+            control.t_start_VBL(1,:) = [VBLTimestamp, StimulusOnsetTime, FlipTimestamp, Missed, Beampos];
         end 
         % Send Eyelink Messages to mark important events:
         if control.frameElapse == 1 && eyelink.mode == 1
-            trialData.t_move_VBL(trialNum,:) = [VBLTimestamp, StimulusOnsetTime, FlipTimestamp, Missed, Beampos];
+            control.t_move_VBL(1,:) = [VBLTimestamp, StimulusOnsetTime, FlipTimestamp, Missed, Beampos];
             Eyelink('Message', 'STIM_ON');                                 % target movement onset 
-        elseif control.frameElapse == trialData.tFlash(trialNum) && eyelink.mode == 1
-            trialData.t_flash_VBL(trialNum,:) = [VBLTimestamp, StimulusOnsetTime, FlipTimestamp, Missed, Beampos]; 
+        elseif control.frameElapse == control.tFlash && eyelink.mode == 1
+            control.t_flash_VBL(1,:) = [VBLTimestamp, StimulusOnsetTime, FlipTimestamp, Missed, Beampos]; 
             Eyelink('Message', 'FLASH_ON');                                % flash onset
-        elseif control.frameElapse == trialData.tFlash(trialNum) + 1 && eyelink.mode == 1
+        elseif control.frameElapse == control.tFlash + 1 && eyelink.mode == 1
              Eyelink('Message', 'FLASH_OFF')                                % flash offset
         end
         
@@ -252,11 +266,23 @@ while trialNum <= const.numTrials                                       % START 
 %         targetInfo{iterations,:} = [num2str([eyelink.Data.time, control.eyeTarget]), char(10)];
         eyeTarget            = control.eyeTarget;
         if eyelink.mode == 1
-            str = [num2str([Eyelink('TrackerTime') - trialData.tMainSync(trialNum), eyeTarget]), char(10)];
+            str = [num2str([Eyelink('TrackerTime') - control.tMainSync, eyeTarget]), char(10)];
         else
-            str = [num2str([GetSecs - trialData.tMainSync(trialNum), eyeTarget]), char(10)];
+            str = [num2str([GetSecs - control.tMainSync, eyeTarget]), char(10)];
         end
         fwrite(control.targetFID, str);
+        
+        % (b) Save trial data by loading trialData with control
+        fieldnamesList = fieldnames(trialCondition);
+        for thisfield = 1:length(fieldnamesList)
+            thisfieldName = fieldnamesList{thisfield};
+            if ismember(thisfieldName, {'Properties','Row','Variables'}) == 0
+                % load single values:
+                eval(sprintf('trialData.%s(%d) = control.%s;',thisfieldName,trialNum,thisfieldName));
+                % load vector:
+                %eval(sprintf('trialData.%s(%d,:) = control.%s(1,:);',thisfieldName,trialNum,thisfieldName));                
+            end
+        end
 
         %% (4.6) End the trial (i.e. break while-loop; stop DPI recording)
         if control.break
