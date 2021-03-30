@@ -17,7 +17,7 @@
 
 %% Eye Data
 %  eye data need to have been converted using convert_edf2asc.m
-eyeFile = [currentSubject 't' num2str(currentTrial, '%03d') '.mat']; % mat file, eye data transformed from edf
+eyeFile = [currentSubject 't' num2str(currentTrial, '%02d') '.mat']; % mat file, eye data transformed from edf
 % make sure they are included in the experiment code
 eyeData = readEyeData(eyeFile, dataPath, currentSubject, currentTrial, analysisPath, eventLog, Experiment);
 eyeData = processEyeData(eyeData); 
