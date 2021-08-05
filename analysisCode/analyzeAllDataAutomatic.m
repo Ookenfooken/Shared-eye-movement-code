@@ -11,13 +11,24 @@
 %				for future VPOM students
 % for questions email jolande.fooken@rwth-aachen.de 
 
-% define general experimental settings here
-sampleRate = 1000;
-screenSizeX = 40;
-screenSizeY = 38.8;
-screenResX = 1280;
-screenResY = 1024;
-distance = 46.25;
+% ask for general settings (using some standard settings)
+prompt = {'Enter eye tracker sampling rate', ...
+    'Enter monitor resolution x', 'Enter monitor resolution y',...
+    'Enter monitor size x (cm)', 'Enter monitor size y (cm)', ...
+     'Enter viewing distance (cm)'};
+dlgtitle = 'Setup settings';
+num_lines = 1;
+definput = {'1000','1280', '1024','53', '30', '50'};
+answer = inputdlg(prompt,dlgtitle,num_lines,definput);
+
+sampleRate = str2double(answer{1});
+screenSizeX = str2double(answer{2});
+screenSizeY = str2double(answer{3});
+screenResX = str2double(answer{4});
+screenResY = str2double(answer{5});
+distance = str2double(answer{6});
+
+% other thresholds are currently inputted manually
 distanceZ = 17;     %distance from finger to screen in initial position
 saccadeThreshold = 50; %threshold for saccade sensitivity
 microSaccadeThreshold = 6;
