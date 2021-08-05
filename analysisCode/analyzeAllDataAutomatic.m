@@ -13,6 +13,7 @@
 
 % define general experimental settings here
 sampleRate = 1000;
+screenSizeX = 40;
 screenSizeY = 38.8;
 screenResX = 1280;
 screenResY = 1024;
